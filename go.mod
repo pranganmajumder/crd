@@ -1,4 +1,4 @@
-module github.com/pranganmajumder/custom-crd
+module github.com/pranganmajumder/crd
 
 go 1.15
 

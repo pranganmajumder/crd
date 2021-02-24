@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	democom "github.com/pranganmajumder/custom-crd/pkg/apis/demo.com"
+	democom "github.com/pranganmajumder/crd/pkg/apis/demo.com"
 )
 
 // SchemeGroupVersion is group version used to register these objects
