@@ -1,6 +1,6 @@
 
 ###### Workflow:
-* create directory and file like that  [scafolding](https://github.com/pranganmajumder/crd/tree/master/images/scaffold_directory.png)
+* create directory and file like that  [scafolding](/images/scaffold_directory.png)
     * Note: not custom-crd, it will be crd
 * run `go mod init && go mod tidy && go mod vendor`
 * `cd hack/`
