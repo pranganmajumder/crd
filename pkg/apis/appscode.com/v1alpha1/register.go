@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-	democom "github.com/pranganmajumder/crd/pkg/apis/demo.com"
+	democom "github.com/pranganmajumder/crd/pkg/apis/appscode.com"
 )
 
 // SchemeGroupVersion is group version used to register these objects
@@ -33,8 +33,12 @@ func init() {
 // Adds the list of known types to api.Scheme.
 func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
-		&UserInfo{},
-		&UserList{},
+		&Apployment{},
+		&ApploymentList{},
+	)
+
+	scheme.AddKnownTypes(SchemeGroupVersion,
+		&metav1.Status{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil
