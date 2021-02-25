@@ -8,16 +8,16 @@ import (
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// Database describes a database.
-type Database struct {
+// UserInfo describes a database.
+type UserInfo struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec DatabaseSpec `json:"spec"`
+	Spec UserSpec `json:"spec"`
 }
 
-// DatabaseSpec is the spec for a Foo resource
-type DatabaseSpec struct {
+// UserSpec is the spec for a Foo resource
+type UserSpec struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Encoding string `json:"encoding,omitempty"`
@@ -25,10 +25,10 @@ type DatabaseSpec struct {
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// DatabaseList is a list of Database resources
-type DatabaseList struct {
+// UserList is a list of UserInfo resources
+type UserList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []Database `json:"items"`
+	Items []UserInfo `json:"items"`
 }
