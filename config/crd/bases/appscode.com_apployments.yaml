@@ -1,0 +1,63 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (devel)
+  creationTimestamp: null
+  name: apployments.appscode.com
+spec:
+  group: appscode.com
+  names:
+    kind: Apployment
+    listKind: ApploymentList
+    plural: apployments
+    singular: apployment
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Apployment describes a database.
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ApploymentSpec is the spec
+            properties:
+              apployment_name:
+                type: string
+              replicas:
+                format: int32
+                type: integer
+            required:
+            - apployment_name
+            - replicas
+            type: object
+          status:
+            properties:
+              available_replicas:
+                format: int32
+                type: integer
+            required:
+            - available_replicas
+            type: object
+        required:
+        - spec
+        - status
+        type: object
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

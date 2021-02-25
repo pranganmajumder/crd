@@ -1,4 +1,4 @@
-CONTROLLER_GEN=/home/prangan/go/bin/controller-gen
+CONTROLLER_GEN=./bin/controller-gen
 all: manifests
 .PHONY:manifests
 
