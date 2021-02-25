@@ -9,3 +9,9 @@
 * change mod of file update-code.sh `chmod +x update-codegen.sh`
 * `./update-codegen.sh`
     * it'll generate deepcopy funcs inside v1alpha1 folder & 'clientset , listers , informers ' inside auto generated client folder
+  
+* now run `make` after putting necessary rules into `Makefile`
+  * it'll generate `crd` inside auto generated `config/crd/bases/` directory named `appscode.com_apployments.yaml`
+  
+* `kc apply -f appscode.com_apployments.yaml`
+  * it'll generate the crd named `apployment.appscode.com` now create your custom yaml resource file 
