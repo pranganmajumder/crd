@@ -15,7 +15,7 @@ type Apployment struct {
 	metav1.ObjectMeta 			`json:"metadata,omitempty"`
 
 	Spec 	ApploymentSpec 		`json:"spec"`
-	Status  ApploymentStatus 	`json:"status"`
+	Status  ApploymentStatus 	`json:"status,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
