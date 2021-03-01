@@ -17,3 +17,9 @@
   * it'll generate the crd named `apployments.appscode.com` now create your custom yaml resource file 
   * apply custom object which you created apps-object/apployment.yaml manually `kc apply -f apployment.yaml` . 
   * It'll create apployment , run `kc get apployment`
+
+
+
+
+##### Error:
+* `package github.com/googleapis/gnostic/OpenAPIv2: cannot find package` for this run `go get github.com/googleapis/gnostic@v0.4.0` inside directory `crd`
