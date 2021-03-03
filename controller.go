@@ -111,7 +111,9 @@ func NewController(kubeclientset kubernetes.Interface, sampleclientset clientset
 // is closed, at which point it will shutdown the workqueue and wait for
 // workers to finish processing their current work items.
 func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
+	// don't let panics crash the process
 	defer utilruntime.HandleCrash()
+	// make sure the work queue is shutdown which will trigger workers to end
 	defer c.workqueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
@@ -123,15 +125,20 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
-	klog.Info("Starting workers")
-	// Launch two workers to process Foo resources
+	klog.Info("Starting ----------------- controller or worker ")
+	// start up your worker threads based on threadiness.  Some controllers
+	// have multiple kinds of workers
+	// Launch two workers to process Apployment resources
 	for i := 0; i < threadiness; i++ {
+		// runWorker will loop until "something bad" happens.  The .Until will
+		// then rekick the worker after one second
 		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
 
 	klog.Info("Started workers")
+	// wait until we're told to stop
 	<-stopCh
-	klog.Info("Shutting down workers")
+	klog.Info("Shutting down ------------------ controller or worker ")
 
 	return nil
 }
@@ -140,19 +147,28 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 // processNextWorkItem function in order to read and process a message on the
 // workqueue.
 func (c *Controller) runWorker() {
+	// hot loop until we're told to stop.  processNextWorkItem will
+	// automatically wait until there's work available, so we don't worry
+	// about secondary waits
 	for c.processNextWorkItem() {
 	}
 }
 
+// processNextWorkItem deals with one key off the queue.  It returns false
+// when it's time to quit.
 // processNextWorkItem will read a single work item off the workqueue and
 // attempt to process it, by calling the syncHandler.
 func (c *Controller) processNextWorkItem() bool {
+	// pull the next work item from queue.  It should be a key we use to lookup
+	// something in a cache
 	obj, shutdown := c.workqueue.Get()
 
 	if shutdown {
 		return false
 	}
 
+	// you always have to indicate to the queue that you've completed a piece of
+	// work
 	// We wrap this block in a func so we can defer c.workqueue.Done.
 	err := func(obj interface{}) error {
 		// We call Done here so the workqueue knows we have finished
@@ -178,7 +194,8 @@ func (c *Controller) processNextWorkItem() bool {
 			return nil
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
-		// Foo resource to be synced.
+		// do your work on the key.  This method will contains your "do stuff" logic
+		// Apployment resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
@@ -210,13 +227,12 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the Foo resource with this namespace/name
+	// Get the Apployment resource with this namespace/name
 	apployment, err := c.apploymentsLister.Apployments(namespace).Get(name)
 	if err != nil {
-		// The Foo resource may no longer exist, in which case we stop
-		// processing.
+		// The Apployment resource may no longer exist, in which case we stop processing.
 		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("foo '%s' in work queue no longer exists", key))
+			utilruntime.HandleError(fmt.Errorf("apployment '%s' in work queue no longer exists", key))
 			return nil
 		}
 
@@ -232,7 +248,7 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the deployment with the name specified in Foo.spec
+	// Get the deployment with the name specified in Apployment.spec
 	deployment, err := c.deploymentsLister.Deployments(apployment.Namespace).Get(deploymentName)
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
@@ -246,19 +262,19 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
-	// If the Deployment is not controlled by this Foo resource, we should log
+	// If the Deployment is not controlled by this Apployment resource, we should log
 	// a warning to the event recorder and return error msg.
 	if !metav1.IsControlledBy(deployment, apployment) {
 		msg := fmt.Sprintf(MessageResourceExists, deployment.Name)
-		//c.recorder.Event(foo, corev1.EventTypeWarning, ErrResourceExists, msg)
+		//c.recorder.Event(foo, corev1.EventTypeWarning, ErrResourceExists, msg) // to run the program we omitted it
 		return fmt.Errorf(msg)
 	}
 
-	// If this number of the replicas on the Foo resource is specified, and the
+	// If this number of the replicas on the Apployment resource is specified, and the
 	// number does not equal the current desired replicas on the Deployment, we
 	// should update the Deployment resource.
 	if apployment.Spec.Replicas != nil && *apployment.Spec.Replicas != *deployment.Spec.Replicas {
-		klog.V(4).Infof("Foo %s replicas: %d, deployment replicas: %d", name, *apployment.Spec.Replicas, *deployment.Spec.Replicas)
+		klog.V(4).Infof("Apployment %s replicas: %d, deployment replicas: %d", name, *apployment.Spec.Replicas, *deployment.Spec.Replicas)
 		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Update( context.TODO(), newDeployment(apployment), metav1.UpdateOptions{})
 	}
 
@@ -269,7 +285,7 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
-	// Finally, we update the status block of the Foo resource to reflect the
+	// Finally, we update the status block of the Apployment resource to reflect the
 	// current state of the world
 	err = c.updateApploymentStatus(apployment, deployment)
 	if err != nil {
@@ -287,16 +303,16 @@ func (c *Controller) updateApploymentStatus(apployment *samplev1alpha1.Apploymen
 	apploymentCopy := apployment.DeepCopy()
 	apploymentCopy.Status.AvailableReplicas = deployment.Status.AvailableReplicas
 	// If the CustomResourceSubresources feature gate is not enabled,
-	// we must use Update instead of UpdateStatus to update the Status block of the Foo resource.
+	// we must use Update instead of UpdateStatus to update the Status block of the Apployment resource.
 	// UpdateStatus will not allow changes to the Spec of the resource,
 	// which is ideal for ensuring nothing other than resource status has been updated.
 	_, err := c.sampleclientset.AppscodeV1alpha1().Apployments(apployment.Namespace).Update(context.TODO(),  apploymentCopy, metav1.UpdateOptions{})
 	return err
 }
 
-// enqueueApployment takes a Foo resource and converts it into a namespace/name
+// enqueueApployment takes a Apployment resource and converts it into a namespace/name
 // string which is then put onto the work queue. This method should *not* be
-// passed resources of any type other than Foo.
+// passed resources of any type other than Apployment.
 func (c *Controller) enqueueApployment(obj interface{}) {
 	var key string
 	var err error
