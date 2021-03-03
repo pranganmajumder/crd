@@ -18,7 +18,24 @@
   * apply custom object which you created apps-object/apployment.yaml manually `kc apply -f apployment.yaml` . 
   * It'll create apployment , run `kc get apployment`
 
+## Running Controller
 
+
+
+```sh
+# assumes you have a working kubeconfig, not required if operating in-cluster
+go build -o controller .
+./controller -kubeconfig=$HOME/.kube/config
+
+# create a CustomResourceDefinition
+kubectl create -f config/crd/bases/appscode.com_apployments.yaml
+
+# create a custom resource of type Foo
+kubectl create -f apps-object/apployment.yaml
+
+# check deployments created through the custom resource
+kubectl get deployments
+```
 
 
 ##### Error:
