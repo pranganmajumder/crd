@@ -4,4 +4,4 @@ metadata:
   name: apployments.appscode.com
 spec:
   apployment_name: apptesting
-  replicas: 3
+  replicas: 4
