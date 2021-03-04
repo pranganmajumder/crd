@@ -16,9 +16,9 @@ package main
 import (
 	"context"
 	"fmt"
+	pranganclientset "github.com/pranganmajumder/crd/pkg/client/clientset/versioned"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	pranganclientset "github.com/pranganmajumder/crd/pkg/client/clientset/versioned"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -31,10 +31,10 @@ import (
 	"time"
 
 	appscodev1alpha1 "github.com/pranganmajumder/crd/pkg/apis/appscode.com/v1alpha1"
-	appslisters "k8s.io/client-go/listers/apps/v1"
-	listers "github.com/pranganmajumder/crd/pkg/client/listers/appscode.com/v1alpha1"
 	informers "github.com/pranganmajumder/crd/pkg/client/informers/externalversions/appscode.com/v1alpha1"
+	listers "github.com/pranganmajumder/crd/pkg/client/listers/appscode.com/v1alpha1"
 	appsinformers "k8s.io/client-go/informers/apps/v1"
+	appslisters "k8s.io/client-go/listers/apps/v1"
 )
 
 const controllerAgentName = "sample-controller"
@@ -48,8 +48,8 @@ const (
 
 // Controller is the controller implementation for Foo resources
 type Controller struct {
-	kubeclientset   kubernetes.Interface
-	sampleclientset pranganclientset.Interface
+	kubeclientset    kubernetes.Interface
+	pranganclientset pranganclientset.Interface
 
 	deploymentsLister appslisters.DeploymentLister
 	deploymentsSynced cache.InformerSynced
@@ -61,12 +61,12 @@ type Controller struct {
 }
 
 // NewController returns a new sample controller
-func NewController(kubeclientset kubernetes.Interface, sampleclientset pranganclientset.Interface, deploymentInformer appsinformers.DeploymentInformer,
+func NewController(kubeclientset kubernetes.Interface, pranganclientset pranganclientset.Interface, deploymentInformer appsinformers.DeploymentInformer,
 	apploymentInformer informers.ApploymentInformer) *Controller {
 
 	controller := &Controller{
 		kubeclientset:     kubeclientset,
-		sampleclientset:   sampleclientset,
+		pranganclientset:  pranganclientset,
 		deploymentsLister: deploymentInformer.Lister(),
 		deploymentsSynced: deploymentInformer.Informer().HasSynced,
 		apploymentsLister: apploymentInformer.Lister(),
@@ -250,13 +250,24 @@ func (c *Controller) syncHandler(key string) error {
 
 	// Get the deployment with the name specified in Apployment.spec
 	deployment, err := c.deploymentsLister.Deployments(apployment.Namespace).Get(deploymentName)
-	
+	//serviceClient, err := c.kubeclientset.CoreV1().Services(apployment.Namespace)
+
 
 	// If the resource doesn't exist, we'll create it
+
 	if errors.IsNotFound(err) {
+		fmt.Println("Creating Deployment .......... ")
 		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Create(context.TODO() ,newDeployment(apployment), metav1.CreateOptions{})
-		//service, err = c.kubeclientset.CoreV1().Services(apployment.Namespace).Create(context.TODO(), )
+
+		fmt.Println("Creating Service---------------")
+		service, err := c.kubeclientset.CoreV1().Services(apployment.Namespace).Create(context.TODO(), newService(apployment), metav1.CreateOptions{})
+
+		if err != nil{
+			fmt.Errorf("%v", err.Error())
+		}
+		fmt.Println("  %q Service Created Successfully \n", service.GetObjectMeta().GetName())
 	}
+
 
 	// If an error occurs during Get/Create, we'll requeue the item so we can
 	// attempt processing again later. This could have been caused by a
@@ -309,7 +320,7 @@ func (c *Controller) updateApploymentStatus(apployment *appscodev1alpha1.Apploym
 	// we must use Update instead of UpdateStatus to update the Status block of the Apployment resource.
 	// UpdateStatus will not allow changes to the Spec of the resource,
 	// which is ideal for ensuring nothing other than resource status has been updated.
-	_, err := c.sampleclientset.AppscodeV1alpha1().Apployments(apployment.Namespace).Update(context.TODO(),  apploymentCopy, metav1.UpdateOptions{})
+	_, err := c.pranganclientset.AppscodeV1alpha1().Apployments(apployment.Namespace).Update(context.TODO(),  apploymentCopy, metav1.UpdateOptions{})
 	return err
 }
 
@@ -406,6 +417,24 @@ func newDeployment(apployment *appscodev1alpha1.Apployment) *appsv1.Deployment {
 	}
 }
 
-func newService()  {
-	
+func newService(apployment *appscodev1alpha1.Apployment) *corev1.Service  {
+
+	return &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: 			apployment.ObjectMeta.Name,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(apployment, appscodev1alpha1.SchemeGroupVersion.WithKind("Apployment")),
+			},
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{
+				{
+					Port: apployment.Spec.ContainerPort,
+					NodePort: apployment.Spec.NodePort, //not mendatory
+				},
+			},
+			//Selector: apployment.Spec.Label,
+			Type: corev1.ServiceType(apployment.Spec.ServiceType),
+		},
+	}
 }

@@ -7,5 +7,9 @@ spec:
   apployment_name: testing
   replicas: 2
   image: pranganmajumder/go-basic-restapi:1.0.4
-
+  service_type: NodePort
+  node_port: 31002
+  container_port: 8080
+  label:
+    test: aclabel
 

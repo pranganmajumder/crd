@@ -34,6 +34,10 @@ type ApploymentSpec struct {
 	ApploymentName    string  `json:"apployment_name"`
 	Replicas          *int32  `json:"replicas"`
 	Image             string  `json:"image"`
+	ServiceType       string  `json:"service_type"`
+	NodePort          int32   `json:"node_port"`
+	ContainerPort     int32   `json:"container_port"`
+	Label             map[string]string  `json:"label"`
 }
 
 type ApploymentStatus struct {

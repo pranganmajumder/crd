@@ -12,20 +12,13 @@
   
 * now run `make` after putting necessary rules into `Makefile`
   * it'll generate `crd` inside auto generated `config/crd/bases/` directory named `appscode.com_apployments.yaml`
-  
-* `kc apply -f appscode.com_apployments.yaml`
-  * it'll generate the crd named `apployments.appscode.com` now create your custom yaml resource file 
-  * apply custom object which you created apps-object/apployment.yaml manually `kc apply -f apployment.yaml` . 
-  * It'll create apployment , run `kc get apployment`
 
-## Running Controller
-
-
+## Now Run your custorm Controller
 
 ```sh
 # assumes you have a working kubeconfig, not required if operating in-cluster
-go build -o controller .
-./controller -kubeconfig=$HOME/.kube/config
+go build -o controller-bin .
+./controller-bin -kubeconfig=$HOME/.kube/config
 
 # create a CustomResourceDefinition
 kubectl create -f config/crd/bases/appscode.com_apployments.yaml
@@ -35,6 +28,11 @@ kubectl create -f apps-object/apployment.yaml
 
 # check deployments created through the custom resource
 kubectl get deployments
+kubectl get apployment
+kubectl get pod
+kubectl get svc
+# it'll delete our number of desired replica but after a while our desired number of replica will be regenerated through custom controller 
+kubectl delete deployment testing 
 ```
 
 

@@ -34,15 +34,31 @@ spec:
             properties:
               apployment_name:
                 type: string
+              container_port:
+                format: int32
+                type: integer
               image:
                 type: string
+              label:
+                additionalProperties:
+                  type: string
+                type: object
+              node_port:
+                format: int32
+                type: integer
               replicas:
                 format: int32
                 type: integer
+              service_type:
+                type: string
             required:
             - apployment_name
+            - container_port
             - image
+            - label
+            - node_port
             - replicas
+            - service_type
             type: object
           status:
             properties:
