@@ -250,9 +250,12 @@ func (c *Controller) syncHandler(key string) error {
 
 	// Get the deployment with the name specified in Apployment.spec
 	deployment, err := c.deploymentsLister.Deployments(apployment.Namespace).Get(deploymentName)
+	
+
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
 		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Create(context.TODO() ,newDeployment(apployment), metav1.CreateOptions{})
+		//service, err = c.kubeclientset.CoreV1().Services(apployment.Namespace).Create(context.TODO(), )
 	}
 
 	// If an error occurs during Get/Create, we'll requeue the item so we can
@@ -370,7 +373,7 @@ func (c *Controller) handleObject(obj interface{}) {
 // the Foo resource that 'owns' it.
 func newDeployment(apployment *appscodev1alpha1.Apployment) *appsv1.Deployment {
 	labels := map[string]string{
-		"app":        "AppscodeApployment",
+		"app":        "Appscode",
 		"controller": apployment.Name,
 	}
 	return &appsv1.Deployment{
@@ -401,4 +404,8 @@ func newDeployment(apployment *appscodev1alpha1.Apployment) *appsv1.Deployment {
 			},
 		},
 	}
+}
+
+func newService()  {
+	
 }
