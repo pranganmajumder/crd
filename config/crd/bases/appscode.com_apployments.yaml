@@ -34,11 +34,14 @@ spec:
             properties:
               apployment_name:
                 type: string
+              image:
+                type: string
               replicas:
                 format: int32
                 type: integer
             required:
             - apployment_name
+            - image
             - replicas
             type: object
           status:

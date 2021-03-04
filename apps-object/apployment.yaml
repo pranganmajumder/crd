@@ -1,7 +1,8 @@
 apiVersion: appscode.com/v1alpha1
 kind: Apployment
 metadata:
-  name: apployments.appscode.com
+  name: apiserver-apployment
 spec:
-  apployment_name: apptesting
+  apployment_name: testing
   replicas: 4
+  image: pranganmajumder/go-basic-restapi:1.0.0

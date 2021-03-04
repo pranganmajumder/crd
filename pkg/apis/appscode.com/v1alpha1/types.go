@@ -33,6 +33,7 @@ type ApploymentList struct {
 type ApploymentSpec struct {
 	ApploymentName    string  `json:"apployment_name"`
 	Replicas          *int32  `json:"replicas"`
+	Image             string  `json:"image"`
 }
 
 type ApploymentStatus struct {

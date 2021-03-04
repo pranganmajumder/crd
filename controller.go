@@ -18,7 +18,7 @@ import (
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	clientset "github.com/pranganmajumder/crd/pkg/client/clientset/versioned"
+	pranganclientset "github.com/pranganmajumder/crd/pkg/client/clientset/versioned"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -30,7 +30,7 @@ import (
 	"k8s.io/klog/v2"
 	"time"
 
-	samplev1alpha1 "github.com/pranganmajumder/crd/pkg/apis/appscode.com/v1alpha1"
+	appscodev1alpha1 "github.com/pranganmajumder/crd/pkg/apis/appscode.com/v1alpha1"
 	appslisters "k8s.io/client-go/listers/apps/v1"
 	listers "github.com/pranganmajumder/crd/pkg/client/listers/appscode.com/v1alpha1"
 	informers "github.com/pranganmajumder/crd/pkg/client/informers/externalversions/appscode.com/v1alpha1"
@@ -48,8 +48,8 @@ const (
 
 // Controller is the controller implementation for Foo resources
 type Controller struct {
-	kubeclientset kubernetes.Interface
-	sampleclientset clientset.Interface
+	kubeclientset   kubernetes.Interface
+	sampleclientset pranganclientset.Interface
 
 	deploymentsLister appslisters.DeploymentLister
 	deploymentsSynced cache.InformerSynced
@@ -61,7 +61,7 @@ type Controller struct {
 }
 
 // NewController returns a new sample controller
-func NewController(kubeclientset kubernetes.Interface, sampleclientset clientset.Interface, deploymentInformer appsinformers.DeploymentInformer,
+func NewController(kubeclientset kubernetes.Interface, sampleclientset pranganclientset.Interface, deploymentInformer appsinformers.DeploymentInformer,
 	apploymentInformer informers.ApploymentInformer) *Controller {
 
 	controller := &Controller{
@@ -296,7 +296,7 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
-func (c *Controller) updateApploymentStatus(apployment *samplev1alpha1.Apployment, deployment *appsv1.Deployment) error {
+func (c *Controller) updateApploymentStatus(apployment *appscodev1alpha1.Apployment, deployment *appsv1.Deployment) error {
 	// NEVER modify objects from the store. It's a read-only, local cache.
 	// You can use DeepCopy() to make a deep copy of original object and modify this copy
 	// Or create a copy manually for better performance
@@ -368,7 +368,7 @@ func (c *Controller) handleObject(obj interface{}) {
 // newDeployment creates a new Deployment for a Foo resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the Foo resource that 'owns' it.
-func newDeployment(apployment *samplev1alpha1.Apployment) *appsv1.Deployment {
+func newDeployment(apployment *appscodev1alpha1.Apployment) *appsv1.Deployment {
 	labels := map[string]string{
 		"app":        "AppscodeApployment",
 		"controller": apployment.Name,
@@ -378,7 +378,7 @@ func newDeployment(apployment *samplev1alpha1.Apployment) *appsv1.Deployment {
 			Name:      apployment.Spec.ApploymentName,
 			Namespace: apployment.Namespace,
 			OwnerReferences: []metav1.OwnerReference{
-				*metav1.NewControllerRef(apployment, samplev1alpha1.SchemeGroupVersion.WithKind("Apployment")),
+				*metav1.NewControllerRef(apployment, appscodev1alpha1.SchemeGroupVersion.WithKind("Apployment")),
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -393,8 +393,8 @@ func newDeployment(apployment *samplev1alpha1.Apployment) *appsv1.Deployment {
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:  "ac",
-							Image: "nginx:latest",
+							Name:  apployment.Name,
+							Image: apployment.Spec.Image,
 						},
 					},
 				},
