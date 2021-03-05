@@ -258,14 +258,17 @@ func (c *Controller) syncHandler(key string) error {
 	if errors.IsNotFound(err) {
 		fmt.Println("Creating Deployment .......... ")
 		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Create(context.TODO() ,newDeployment(apployment), metav1.CreateOptions{})
+		if err != nil{
+			fmt.Errorf("Error %v detected while creating Deployment", err.Error())
+		}
 
 		fmt.Println("Creating Service---------------")
 		service, err := c.kubeclientset.CoreV1().Services(apployment.Namespace).Create(context.TODO(), newService(apployment), metav1.CreateOptions{})
 
 		if err != nil{
-			fmt.Errorf("%v", err.Error())
+			fmt.Errorf("error %v detected while creating Service %q", err.Error(), service.GetObjectMeta().GetName())
 		}
-		fmt.Println("  %q Service Created Successfully \n", service.GetObjectMeta().GetName())
+		fmt.Println("service Created Successfully \n")
 	}
 
 
@@ -290,14 +293,15 @@ func (c *Controller) syncHandler(key string) error {
 	if apployment.Spec.Replicas != nil && *apployment.Spec.Replicas != *deployment.Spec.Replicas {
 		klog.V(4).Infof("Apployment %s replicas: %d, deployment replicas: %d", name, *apployment.Spec.Replicas, *deployment.Spec.Replicas)
 		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Update( context.TODO(), newDeployment(apployment), metav1.UpdateOptions{})
+		// If an error occurs during Update, we'll requeue the item so we can
+		// attempt processing again later. This could have been caused by a
+		// temporary network failure, or any other transient reason.
+		if err != nil {
+			return err
+		}
 	}
 
-	// If an error occurs during Update, we'll requeue the item so we can
-	// attempt processing again later. This could have been caused by a
-	// temporary network failure, or any other transient reason.
-	if err != nil {
-		return err
-	}
+
 
 	// Finally, we update the status block of the Apployment resource to reflect the
 	// current state of the world
