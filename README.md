@@ -1,4 +1,4 @@
-
+[![Go Report Card](https://goreportcard.com/badge/github.com/pranganmajumder/crd)](https://goreportcard.com/report/github.com/pranganmajumder/crd)
 ###### Workflow:
 * create directory and file like that
    * Note: not custom-crd, it will be crd  
