@@ -11,12 +11,12 @@ import (
 
 // Apployment describes a database.
 type Apployment struct {
-	metav1.TypeMeta   			`json:",inline"`
+	metav1.TypeMeta `json:",inline"`
 	// +optional
-	metav1.ObjectMeta 			`json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec 	ApploymentSpec 		`json:"spec"`
-	Status  ApploymentStatus 	`json:"status,omitempty"`
+	Spec   ApploymentSpec   `json:"spec"`
+	Status ApploymentStatus `json:"status,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -30,17 +30,17 @@ type ApploymentList struct {
 	Items []Apployment `json:"items"`
 }
 
-// ApploymentSpec is the spec 
+// ApploymentSpec is the spec
 type ApploymentSpec struct {
-	ApploymentName    string  `json:"apployment_name"`
-	Replicas          *int32  `json:"replicas"`
-	Image             string  `json:"image"`
-	ServiceType       string  `json:"service_type"`
-	NodePort          int32   `json:"node_port"`
-	ContainerPort     int32   `json:"container_port"`
-	Label             map[string]string  `json:"label"`
+	ApploymentName string            `json:"apployment_name"`
+	Replicas       *int32            `json:"replicas"`
+	Image          string            `json:"image"`
+	ServiceType    string            `json:"service_type"`
+	NodePort       int32             `json:"node_port"`
+	ContainerPort  int32             `json:"container_port"`
+	Label          map[string]string `json:"label"`
 }
 
 type ApploymentStatus struct {
-	AvailableReplicas  int32 `json:"available_replicas"`
+	AvailableReplicas int32 `json:"available_replicas"`
 }

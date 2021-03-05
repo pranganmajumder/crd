@@ -1,6 +1,3 @@
-
-
-
 package main
 
 import (
@@ -16,11 +13,7 @@ import (
 
 	appscodeclientset "github.com/pranganmajumder/crd/pkg/client/clientset/versioned"
 	appscodeinformers "github.com/pranganmajumder/crd/pkg/client/informers/externalversions"
-
-
 )
-
-
 
 func main() {
 	var kubeconfig string
@@ -28,8 +21,6 @@ func main() {
 
 	flag.StringVar(&kubeconfig, "kubeconfig", filepath.Join(homedir.HomeDir(), ".kube", "config"), "absolute path to the kubeconfig file")
 	flag.StringVar(&master, "master", "", "master url")
-
-
 
 	cfg, err := clientcmd.BuildConfigFromFlags(master, kubeconfig)
 	if err != nil {
@@ -53,7 +44,6 @@ func main() {
 		kubeInformerFactory.Apps().V1().Deployments(),
 		appscodeInformerFactory.Appscode().V1alpha1().Apployments())
 
-
 	// set up signals so we handle the first shutdown signal gracefully
 	stopCh := make(chan struct{})
 	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
@@ -65,5 +55,3 @@ func main() {
 		klog.Fatalf("Error running controller: %s", err.Error())
 	}
 }
-
-

@@ -40,8 +40,8 @@ import (
 const controllerAgentName = "sample-controller"
 
 const (
-	SuccessSynced = "Synced"
-	ErrResourceExists = "ErrResourceExists"
+	SuccessSynced         = "Synced"
+	ErrResourceExists     = "ErrResourceExists"
 	MessageResourceExists = "Resource %q already exists and is not managed by Foo"
 	MessageResourceSynced = "Foo synced successfully"
 )
@@ -57,7 +57,6 @@ type Controller struct {
 	apploymentsSynced cache.InformerSynced
 
 	workqueue workqueue.RateLimitingInterface
-
 }
 
 // NewController returns a new sample controller
@@ -252,25 +251,23 @@ func (c *Controller) syncHandler(key string) error {
 	deployment, err := c.deploymentsLister.Deployments(apployment.Namespace).Get(deploymentName)
 	//serviceClient, err := c.kubeclientset.CoreV1().Services(apployment.Namespace)
 
-
 	// If the resource doesn't exist, we'll create it
 
 	if errors.IsNotFound(err) {
 		fmt.Println("Creating Deployment .......... ")
-		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Create(context.TODO() ,newDeployment(apployment), metav1.CreateOptions{})
-		if err != nil{
+		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Create(context.TODO(), newDeployment(apployment), metav1.CreateOptions{})
+		if err != nil {
 			fmt.Errorf("Error %v detected while creating Deployment", err.Error())
 		}
 
 		fmt.Println("Creating Service---------------")
 		service, err := c.kubeclientset.CoreV1().Services(apployment.Namespace).Create(context.TODO(), newService(apployment), metav1.CreateOptions{})
 
-		if err != nil{
+		if err != nil {
 			fmt.Errorf("error %v detected while creating Service %q", err.Error(), service.GetObjectMeta().GetName())
 		}
 		fmt.Println("service Created Successfully \n")
 	}
-
 
 	// If an error occurs during Get/Create, we'll requeue the item so we can
 	// attempt processing again later. This could have been caused by a
@@ -292,7 +289,7 @@ func (c *Controller) syncHandler(key string) error {
 	// should update the Deployment resource.
 	if apployment.Spec.Replicas != nil && *apployment.Spec.Replicas != *deployment.Spec.Replicas {
 		klog.V(4).Infof("Apployment %s replicas: %d, deployment replicas: %d", name, *apployment.Spec.Replicas, *deployment.Spec.Replicas)
-		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Update( context.TODO(), newDeployment(apployment), metav1.UpdateOptions{})
+		deployment, err = c.kubeclientset.AppsV1().Deployments(apployment.Namespace).Update(context.TODO(), newDeployment(apployment), metav1.UpdateOptions{})
 		// If an error occurs during Update, we'll requeue the item so we can
 		// attempt processing again later. This could have been caused by a
 		// temporary network failure, or any other transient reason.
@@ -300,8 +297,6 @@ func (c *Controller) syncHandler(key string) error {
 			return err
 		}
 	}
-
-
 
 	// Finally, we update the status block of the Apployment resource to reflect the
 	// current state of the world
@@ -324,7 +319,7 @@ func (c *Controller) updateApploymentStatus(apployment *appscodev1alpha1.Apploym
 	// we must use Update instead of UpdateStatus to update the Status block of the Apployment resource.
 	// UpdateStatus will not allow changes to the Spec of the resource,
 	// which is ideal for ensuring nothing other than resource status has been updated.
-	_, err := c.pranganclientset.AppscodeV1alpha1().Apployments(apployment.Namespace).UpdateStatus(context.TODO(),  apploymentCopy, metav1.UpdateOptions{})
+	_, err := c.pranganclientset.AppscodeV1alpha1().Apployments(apployment.Namespace).UpdateStatus(context.TODO(), apploymentCopy, metav1.UpdateOptions{})
 	return err
 }
 
@@ -381,8 +376,6 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 }
 
-
-
 // newDeployment creates a new Deployment for a Foo resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the Foo resource that 'owns' it.
@@ -421,11 +414,11 @@ func newDeployment(apployment *appscodev1alpha1.Apployment) *appsv1.Deployment {
 	}
 }
 
-func newService(apployment *appscodev1alpha1.Apployment) *corev1.Service  {
+func newService(apployment *appscodev1alpha1.Apployment) *corev1.Service {
 
 	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: 			apployment.ObjectMeta.Name,
+			Name: apployment.ObjectMeta.Name,
 			OwnerReferences: []metav1.OwnerReference{
 				*metav1.NewControllerRef(apployment, appscodev1alpha1.SchemeGroupVersion.WithKind("Apployment")),
 			},
@@ -433,7 +426,7 @@ func newService(apployment *appscodev1alpha1.Apployment) *corev1.Service  {
 		Spec: corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{
 				{
-					Port: apployment.Spec.ContainerPort,
+					Port:     apployment.Spec.ContainerPort,
 					NodePort: apployment.Spec.NodePort, //not mendatory
 				},
 			},
