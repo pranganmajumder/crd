@@ -40,6 +40,7 @@ type ApploymentsGetter interface {
 type ApploymentInterface interface {
 	Create(ctx context.Context, apployment *v1alpha1.Apployment, opts v1.CreateOptions) (*v1alpha1.Apployment, error)
 	Update(ctx context.Context, apployment *v1alpha1.Apployment, opts v1.UpdateOptions) (*v1alpha1.Apployment, error)
+	UpdateStatus(ctx context.Context, apployment *v1alpha1.Apployment, opts v1.UpdateOptions) (*v1alpha1.Apployment, error)
 	Delete(ctx context.Context, name string, opts v1.DeleteOptions) error
 	DeleteCollection(ctx context.Context, opts v1.DeleteOptions, listOpts v1.ListOptions) error
 	Get(ctx context.Context, name string, opts v1.GetOptions) (*v1alpha1.Apployment, error)
@@ -128,6 +129,22 @@ func (c *apployments) Update(ctx context.Context, apployment *v1alpha1.Apploymen
 		Namespace(c.ns).
 		Resource("apployments").
 		Name(apployment.Name).
+		VersionedParams(&opts, scheme.ParameterCodec).
+		Body(apployment).
+		Do(ctx).
+		Into(result)
+	return
+}
+
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *apployments) UpdateStatus(ctx context.Context, apployment *v1alpha1.Apployment, opts v1.UpdateOptions) (result *v1alpha1.Apployment, err error) {
+	result = &v1alpha1.Apployment{}
+	err = c.client.Put().
+		Namespace(c.ns).
+		Resource("apployments").
+		Name(apployment.Name).
+		SubResource("status").
 		VersionedParams(&opts, scheme.ParameterCodec).
 		Body(apployment).
 		Do(ctx).
