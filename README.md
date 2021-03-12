@@ -34,7 +34,8 @@ kubectl get svc
 # it'll delete our number of desired replica but after a while our desired number of replica will be regenerated through custom controller 
 kubectl delete deployment testing 
 ```
-
+##### Resources:
+*https://www.youtube.com/watch?v=XaF3JvzBnjM
 
 ##### Error:
 * `package github.com/googleapis/gnostic/OpenAPIv2: cannot find package` for this run `go get github.com/googleapis/gnostic@v0.4.0` inside directory `crd`
