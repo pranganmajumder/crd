@@ -38,7 +38,7 @@ kubectl delete deployment testing
 * https://www.youtube.com/watch?v=XaF3JvzBnjM
 * https://www.youtube.com/watch?v=41tflsbaZPs
 * https://www.youtube.com/watch?v=a005Qlx11qc
-* https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md
+
 
 ##### Error:
 * `package github.com/googleapis/gnostic/OpenAPIv2: cannot find package` for this run `go get github.com/googleapis/gnostic@v0.4.0` inside directory `crd`
