@@ -39,6 +39,7 @@ kubectl delete deployment testing
 * https://www.youtube.com/watch?v=41tflsbaZPs
 * https://www.youtube.com/watch?v=a005Qlx11qc
 * https://engineering.bitnami.com/articles/a-deep-dive-into-kubernetes-controllers.html
+* https://github.com/kubernetes/client-go/blob/master/examples/workqueue/main.go
 
 
 ##### Error:
